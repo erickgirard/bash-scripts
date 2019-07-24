@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+die () {
+	echo >&2 "$@"
+	exit 1
+}
+
+[ "$#" -eq 1 ] || die "Folder name is required"
+
+for DIR_NAME in $(find $1 -type d -maxdepth 1 | grep -v '^.$'); do
+  cd "$DIR_NAME"
+
+  BRANCH_NAME=$(git branch | grep \* | cut -d ' ' -f2)
+
+  if [ "$BRANCH_NAME" == "master" ]
+  then
+    printf "[\e[32m$BRANCH_NAME\e[m]"
+  else
+    printf "[\e[31m$BRANCH_NAME\e[m]"
+  fi
+
+  echo $DIR_NAME
+
+  cd ..
+done
