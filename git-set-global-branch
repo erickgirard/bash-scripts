@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+die () {
+	echo >&2 "$@"
+	exit 1
+}
+
+[ "$#" -eq 1 ] || die "Branch name is required"
+
+echo "Setting all possible folders to branch $1"
+
+for DIR_NAME in $(find . -type d -maxdepth 1 | grep -v '^.$'); do
+	cd $DIR_NAME
+
+  if [ $(git branch -r | grep $1 | wc -l) -ne 0 ]
+  then
+    if [ $(git branch | grep \* | cut -d ' ' -f2) != $1 ]
+    then
+      git checkout $1
+    fi
+
+    printf "[\e[31m$1\e[m]"
+    echo $DIR_NAME
+  else
+    if [ $(git branch | grep \* | cut -d ' ' -f2) != "master" ]
+    then
+      git checkout master
+    fi
+    
+    printf "[\e[32mmaster\e[m]"
+    echo $DIR_NAME
+  fi
+
+	cd ..
+done
