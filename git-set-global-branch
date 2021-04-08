@@ -12,18 +12,23 @@ echo "Setting all possible folders to branch $1"
 for DIR_NAME in $(find . -type d -maxdepth 1 | grep -v '^.$'); do
 	cd $DIR_NAME
 
+  # validate if the desired branch exists in the all (including remote) branches
   if [ $(git branch -r | grep $1 | wc -l) -ne 0 ]
   then
+    # validate that we are currently on the desired branch
     if [ $(git branch | grep \* | cut -d ' ' -f2) != $1 ]
     then
+      # if not, checkout to the desired branch
       git checkout $1
     fi
 
     printf "[\e[31m$1\e[m]"
     echo $DIR_NAME
   else
+    # the desired branch does not exist, validate if we are currently on master branch
     if [ $(git branch | grep \* | cut -d ' ' -f2) != "master" ]
     then
+      # if not checkout to master
       git checkout master
     fi
     
